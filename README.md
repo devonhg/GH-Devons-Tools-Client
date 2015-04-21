@@ -1,5 +1,5 @@
 # GH-Devons-Tools-Client
-This is a really simple plugin that adds a "client" role to a wordpress website and an administrator webmaster user. Do note however that this plugin is intended to be TEMPORARY! Due to the nature of the administrator webmaster role this can be a significant security risk. Should the client role need to continue however, create a webmaster user manually and remove the webmaster functionality from the file (Lines 38-42).
+This is a really simple plugin that adds a "client" role to a wordpress website and an administrator webmaster user. Do note that after the plugin is activated log into webmaster and change the password! ( Default password is "devonstools" ) 
 
 ##Inherits
 The Client Role inherits all powers of the admin role. 
