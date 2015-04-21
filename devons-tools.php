@@ -16,6 +16,37 @@ if ( ! defined( 'WPINC' ) ) { die; }
 
 
 */
+
+function WBMST_admin_f(){
+    $dt_usr = wp_get_current_user();
+    if ( $dt_usr->user_login == 'webmaster' ){
+        add_action( 'admin_notices', 'WBMST_msg' ); 
+    }    
+}
+
+
+
+function WBMST_msg(){
+    $class = "updated";
+    $message = "You are currently logged in as Webmaster. Deactivating 'Devons Tools - Webmaster' will not remove 'webmaster' user.";
+    echo"<div class=\"$class\"> <p>$message</p></div>";     
+}
+
+
+function WBMST_remove(){
+    $user = wp_get_current_user();
+
+    if ( $user->user_login != 'webmaster' ){
+        if ( username_exists( 'webmaster' ) ){
+            $wm = get_user_by( 'login' , 'webmaster' );
+            wp_delete_user( $wm->ID , $user->ID );
+            
+        }
+    }else{
+
+    }
+}
+
 function WBMST_roles(){
     global $wp_roles;
 	if ( ! isset( $wp_roles ) )
@@ -42,4 +73,6 @@ function WBMST_roles(){
     }
 }
 
+add_action('admin_head' , 'WBMST_admin_f');
 register_activation_hook( __FILE__, 'WBMST_roles' );
+register_deactivation_hook( __FILE__, 'WBMST_remove' );
