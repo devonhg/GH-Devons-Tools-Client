@@ -13,9 +13,18 @@ if ( ! defined( 'WPINC' ) ) { die; }
 	Plugin is based on Devons Tools 1.3
 
 	This plugin contains webmaster settings, including client role. 
-
-
 */
+
+
+class WBMST_core{
+    public function __construct(){
+
+    }
+}
+
+
+
+/*
 
 //Admin css for client
 function WBMST_c_css(){
@@ -116,4 +125,6 @@ function WBMST_roles(){
 add_action('admin_enqueue_scripts' , "WBMST_c_css" ); 
 add_action('admin_head' , 'WBMST_admin_f');
 register_activation_hook( __FILE__, 'WBMST_roles' );
-register_deactivation_hook( __FILE__, 'WBMST_remove' );
+register_uninstall_hook( __FILE__, 'WBMST_remove' );
+
+*/
