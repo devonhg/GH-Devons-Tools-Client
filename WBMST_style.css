@@ -1,0 +1,5 @@
+#wrap .updated,
+#wrap .error,
+#wrap .update-nag{
+	display: none;
+}

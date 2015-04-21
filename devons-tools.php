@@ -17,6 +17,15 @@ if ( ! defined( 'WPINC' ) ) { die; }
 
 */
 
+//Admin css for client
+function WBMST_c_css(){
+    $dt_usr = wp_get_current_user();   
+    if ( in_array( 'Client' , $dt_usr->roles ) ){
+        wp_enqueue_style( 'WBMST_admin', plugins_url('WBMST_style.css', __FILE__) );
+    }
+}
+
+
 //Check of a role exists
 function WBMST_role_exists( $role ) {
     if( ! empty( $role ) ) {
@@ -43,6 +52,9 @@ function WBMST_admin_f(){
     if ( $dt_usr->user_login == 'webmaster' ){
         add_action( 'admin_notices', 'WBMST_msg' ); 
     }    
+    if ( in_array( 'Client' , $dt_usr->roles ) ){
+
+    }
 }
 
 //The header message for the webmaster
@@ -84,6 +96,10 @@ function WBMST_roles(){
         $CR->remove_cap( 'update_themes' );
         $CR->remove_cap( 'list_users' );
         $CR->remove_cap( 'delete_plugins' );
+        $CR->remove_cap( 'install_plugins' );
+        $CR->remove_cap( 'edit_plugins' );
+        $CR->remove_cap( 'delete_plugins' );
+        $CR->remove_cap( 'activate_plugins' );
         $CR->remove_cap( 'create_users' );
         $CR->remove_cap( 'add_users' );
         $CR->remove_cap( 'edit_themes' );
@@ -97,6 +113,7 @@ function WBMST_roles(){
     }
 }
 
+add_action('admin_enqueue_scripts' , "WBMST_c_css" ); 
 add_action('admin_head' , 'WBMST_admin_f');
 register_activation_hook( __FILE__, 'WBMST_roles' );
-register_uninstall_hook( __FILE__, 'WBMST_remove' );
+register_deactivation_hook( __FILE__, 'WBMST_remove' );
