@@ -3,16 +3,12 @@ if ( ! defined( 'WPINC' ) ) { die; }
 /*
  * Plugin Name:       Devons Tools - Webmaster
  * Plugin URI:        
- * Description:       This is the Core for Devons Tools Framework
- * Version:           1.3
+ * Description:       This is a really simple plugin that adds a "client" role to a wordpress website as well as a webmaster user. Useful if you have mutliple clients on different installations and need to be able to set up basic client functionality fast.
+ * Version:           1.0.1
  * Author:            Devon Godfrey
- * Author URI:        http://playfreygames.net
+ * Author URI:        http://dhgodfrey.net
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
-
-	Plugin is based on Devons Tools 1.3
-
-	This plugin contains webmaster settings, including client role. 
 */
 
 //Overall functions
