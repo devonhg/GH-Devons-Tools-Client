@@ -27,3 +27,4 @@ The client role also has most dashboard notifications hidden.
 
 
 ##Uninstallation 
+When removing the plugin, all clients are changed to administrators. Whether or not the webmaster user is removed depends on if the webmaster is the one that removed the plugin. If the webmaster removes the plugin, the webmaster user remains active on the website. However if another account removes it, the webmaster user is removed as well. 
