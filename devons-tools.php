@@ -4,7 +4,7 @@ if ( ! defined( 'WPINC' ) ) { die; }
  * Plugin Name:       Devons Tools - Webmaster
  * Plugin URI:        
  * Description:       This is a really simple plugin that adds a "client" role to a wordpress website as well as a webmaster user. Useful if you have mutliple clients on different installations and need to be able to set up basic client functionality fast.
- * Version:           1.0.1
+ * Version:           v1.0.2
  * Author:            Devon Godfrey
  * Author URI:        http://dhgodfrey.net
  * License:           GPL-2.0+
