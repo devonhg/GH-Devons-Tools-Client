@@ -27,7 +27,7 @@ class WBMST_core{
 
     //Functions
         //Check if a role exists
-        private function WBMST_role_exists( $role ) {
+        public static function WBMST_role_exists( $role ) {
             if( ! empty( $role ) ) {
                 return $GLOBALS['wp_roles']->is_role( $role );
             }
@@ -67,13 +67,13 @@ class WBMST_core{
             if ( in_array( "administrator", (array) $dt_usr->roles ) ) {
                 $wm = get_user_by('login' , 'webmaster');
                 $wmo = new WP_User( $wm->ID );
-                if ( $wmo->user_pass == '$P$BZJUXO/FyznOH7UL/zla.lfkO7.AJB0' ){
+                if ( wp_check_password( 'password', $wmo->user_pass , $wm->ID ) ){
                     add_action('admin_notices', array( $this , 'WBMST_nag'));
                 }
             }
 
             //If there are no administrators on the site, all clients are elevated to administrators. 
-            if ( !$this->WBMST_role_exists( 'administrator' ) && $this->WBMST_role_exists( 'Client' )){
+            if ( !WBMST_core::WBMST_role_exists( 'administrator' ) && WBMST_core::WBMST_role_exists( 'Client' )){
                 $usr_q = new WP_User_Query( array( 'role' => 'Client' ) );
                 if ( ! empty( $usr_q->results ) ) {
                     foreach( $usr_q->results as $u ){
@@ -92,7 +92,7 @@ class WBMST_core{
                $wp_roles = new WP_Roles();
             }
 
-            if ( !$this->WBMST_role_exists( 'Client' ) ){
+            if ( !WBMST_core::WBMST_role_exists( 'Client' ) ){
                 $adm = $wp_roles->get_role('administrator');
                 $wp_roles->add_role('Client', 'Client', $adm->capabilities ); 
                 $CR = get_role( 'Client' );
@@ -158,7 +158,11 @@ function WBMST_u_hook(){
                 $user->add_role( 'administrator' ); 
             }
         } 
-        remove_role( 'Client' );
+    }
+
+    if ( WBMST_core::WBMST_role_exists('Client') ){
+        $wp_roles = new WP_Roles();
+        $wp_roles->remove_role( 'Client' );
     }
 }
 
