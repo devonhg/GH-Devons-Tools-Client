@@ -44,7 +44,7 @@ class WBMST_core{
         add_action('admin_enqueue_scripts' , array( $this, "admin_css" ) ); 
         add_action('admin_head' , array( $this , 'admin_f' ) );
         register_activation_hook( __FILE__, array( $this , 'a_hook' ) );
-        register_deactivation_hook( __FILE__, array( 'WBMST_core' , 'WBMST_u_hook') );
+        register_uninstallation_hook( __FILE__, array( 'WBMST_core' , 'WBMST_u_hook') );
     }
 
     //Functions
