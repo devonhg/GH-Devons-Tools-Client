@@ -60,8 +60,17 @@ class WBMST_core{
         public function admin_f(){
             $dt_usr = wp_get_current_user();
             if ( $dt_usr->user_login == 'webmaster' ){
-                add_action( 'admin_notices', 'WBMST_msg' ); 
+                add_action( 'admin_notices', array( $this, 'WBMST_msg' ) ); 
             }    
+
+            //Check if webmaster password is still password, and nag to change if it is. 
+            if ( in_array( "administrator", (array) $dt_usr->roles ) ) {
+                $wm = get_user_by('login' , 'webmaster');
+                $wmo = new WP_User( $wm->ID );
+                if ( $wmo->user_pass == '$P$BZJUXO/FyznOH7UL/zla.lfkO7.AJB0' ){
+                    add_action('admin_notices', array( $this , 'WBMST_nag'));
+                }
+            }
 
             //If there are no administrators on the site, all clients are elevated to administrators. 
             if ( !$this->WBMST_role_exists( 'administrator' ) && $this->WBMST_role_exists( 'Client' )){
@@ -116,6 +125,12 @@ class WBMST_core{
             $class = "updated";
             $message = "You are currently logged in as Webmaster. Uninstalling 'Devons Tools - Webmaster' will not remove 'webmaster' user.";
             echo"<div class=\"$class\"> <p>$message</p></div>";     
+        }
+
+        public function WBMST_nag(){
+            $class = "error";
+            $message = "Warning! The webmaster account still has the default password! Change it immediately!";
+            echo"<div class=\"$class\"> <h3>$message</h3></div>";     
         }
 }
 
