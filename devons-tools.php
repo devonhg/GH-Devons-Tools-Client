@@ -15,6 +15,28 @@ if ( ! defined( 'WPINC' ) ) { die; }
 	This plugin contains webmaster settings, including client role. 
 */
 
+//Overall functions
+    //Check if a role exists
+    function WBMST_role_exists( $role ) {
+        if( ! empty( $role ) ) {
+            return $GLOBALS['wp_roles']->is_role( $role );
+        }
+        return false;
+    }
+
+    //Checks if a role has users
+    function WBMST_users_roles( $role ){
+        if ( WBMST_role_exists( $role ) ){
+            $usr_q = new WP_User_Query( array( 'role' => $role) );
+            if ( ! empty( $usr_q->results ) ) {
+                return true; 
+            } else { return false; }        
+        }else{
+            return false; 
+        }
+    }    
+
+
 class WBMST_core{
 
     //Construct, handles actions and hooks. 
@@ -22,28 +44,20 @@ class WBMST_core{
         add_action('admin_enqueue_scripts' , array( $this, "admin_css" ) ); 
         add_action('admin_head' , array( $this , 'admin_f' ) );
         register_activation_hook( __FILE__, array( $this , 'a_hook' ) );
-        register_uninstall_hook( __FILE__, 'WBMST_u_hook' );
+        register_deactivation_hook( __FILE__, array( 'WBMST_core' , 'WBMST_u_hook') );
     }
 
     //Functions
-        //Check if a role exists
-        public static function WBMST_role_exists( $role ) {
-            if( ! empty( $role ) ) {
-                return $GLOBALS['wp_roles']->is_role( $role );
-            }
-            return false;
-        }
-
-        //Checks if a role has users
-        public static function WBMST_users_roles( $role ){
-            if ( WBMST_core::WBMST_role_exists( $role ) ){
-                $usr_q = new WP_User_Query( array( 'role' => $role) );
-                if ( ! empty( $usr_q->results ) ) {
-                    return true; 
-                } else { return false; }        
-            }else{
-                return false; 
-            }
+        //Convert clients to admins.
+        private function client_to_admin(){
+            $usr_q = new WP_User_Query( array( 'role' => 'Client' ) );
+            if ( ! empty( $usr_q->results ) ) {
+                foreach( $usr_q->results as $u ){
+                    $user = new WP_User( $u );
+                    $user->remove_role ( 'Client' );
+                    $user->add_role( 'administrator' ); 
+                }
+            }             
         }
 
 
@@ -73,15 +87,8 @@ class WBMST_core{
             }
 
             //If there are no administrators on the site, all clients are elevated to administrators. 
-            if ( !WBMST_core::WBMST_role_exists( 'administrator' ) && WBMST_core::WBMST_role_exists( 'Client' )){
-                $usr_q = new WP_User_Query( array( 'role' => 'Client' ) );
-                if ( ! empty( $usr_q->results ) ) {
-                    foreach( $usr_q->results as $u ){
-                        $user = new WP_User( $u );
-                        $user->remove_role ( 'Client' );
-                        $user->add_role( 'administrator' ); 
-                    }
-                }                 
+            if ( !WBMST_role_exists( 'administrator' ) && WBMST_role_exists( 'Client' )){
+                $this->client_to_admin();               
             }
         }
 
@@ -92,7 +99,7 @@ class WBMST_core{
                $wp_roles = new WP_Roles();
             }
 
-            if ( !WBMST_core::WBMST_role_exists( 'Client' ) ){
+            if ( !WBMST_role_exists( 'Client' ) ){
                 $adm = $wp_roles->get_role('administrator');
                 $wp_roles->add_role('Client', 'Client', $adm->capabilities ); 
                 $CR = get_role( 'Client' );
@@ -120,6 +127,38 @@ class WBMST_core{
             }
         }
 
+        //Removal function, ran when the plugin is uninstalled. 
+        public static function WBMST_u_hook(){
+            $user = wp_get_current_user();
+
+            //Check if current user is not webmaster, and if not remove
+            //webmaster. 
+            if ( $user->user_login != 'webmaster' ){
+                if ( username_exists( 'webmaster' ) ){
+                    $wm = get_user_by( 'login' , 'webmaster' );
+                    wp_delete_user( $wm->ID , $user->ID );
+                }
+            }
+
+            //Changes all client users to administrators, then removes
+            //the client role. 
+            if ( WBMST_users_roles( 'Client' ) ){
+                $usr_q = new WP_User_Query( array( 'role' => 'Client' ) );
+                if ( ! empty( $usr_q->results ) ) {
+                    foreach( $usr_q->results as $u ){
+                        $user = new WP_User( $u );
+                        $user->remove_role ( 'Client' );
+                        $user->add_role( 'administrator' ); 
+                    }
+                }  
+            }
+
+            if ( WBMST_role_exists('Client') ){
+                $wp_roles = new WP_Roles();
+                $wp_roles->remove_role( 'Client' );
+            }
+        }
+
         //The header message for the webmaster
         public function WBMST_msg(){
             $class = "updated";
@@ -127,43 +166,12 @@ class WBMST_core{
             echo"<div class=\"$class\"> <p>$message</p></div>";     
         }
 
+        //Header warning for admin if password for webmaster is default. 
         public function WBMST_nag(){
             $class = "error";
             $message = "Warning! The webmaster account still has the default password! Change it immediately!";
             echo"<div class=\"$class\"> <h3>$message</h3></div>";     
         }
-}
-
-//Removal function, ran when the plugin is uninstalled. 
-function WBMST_u_hook(){
-    $user = wp_get_current_user();
-
-    //Check if current user is not webmaster, and if not remove
-    //webmaster. 
-    if ( $user->user_login != 'webmaster' ){
-        if ( username_exists( 'webmaster' ) ){
-            $wm = get_user_by( 'login' , 'webmaster' );
-            wp_delete_user( $wm->ID , $user->ID );
-        }
-    }
-
-    //Changes all client users to administrators, then removes
-    //the client role. 
-    if ( WBMST_core::WBMST_users_roles( 'Client' ) ){
-        $usr_q = new WP_User_Query( array( 'role' => 'Client' ) );
-        if ( ! empty( $usr_q->results ) ) {
-            foreach( $usr_q->results as $u ){
-                $user = new WP_User( $u );
-                $user->remove_role ( 'Client' );
-                $user->add_role( 'administrator' ); 
-            }
-        } 
-    }
-
-    if ( WBMST_core::WBMST_role_exists('Client') ){
-        $wp_roles = new WP_Roles();
-        $wp_roles->remove_role( 'Client' );
-    }
 }
 
 new WBMST_core;
