@@ -10,18 +10,21 @@ The Client Role inherits all powers of the admin role.
 ###Capability Removals
 The Client Role removes the following capabilities from the inherited admin role.   
 
-*promote_users   
-*remove_users   
-*switch_themes   
-*update_plugins   
-*update_themes   
-*list_users   
-*delete_plugins   
-*edit_plugins 
-*create_users   
-*add_users   
-*edit_themes   
-*manage_options   
+*promote_users
+*remove_users
+*switch_themes
+*update_plugins
+*update_themes
+*list_users
+*delete_plugins
+*install_plugins
+*edit_plugins
+*delete_plugins
+*activate_plugins
+*create_users
+*add_users
+*edit_themes
+*manage_options
 
 The client role also has most dashboard notifications hidden. 
 
